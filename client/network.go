@@ -7,10 +7,6 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-// Todo: Write Issue: Bark isn't throwing an error when insertion fails.
-
-// Todo: Write Issue: Bark to send proper JSON response after insertion.
-
 func post(url, payload string) (string, appError.AppErr) {
 	var err appError.AppErr
 	req := fasthttp.AcquireRequest()
@@ -38,7 +34,7 @@ func PostLog(url string, log models.BarkLog) (string, appError.AppErr) {
 	return post(url, string(logRawJson))
 }
 
-func PostLogs(url string, log []models.BarkLog) (string, appError.AppErr) {
+func PostLogArray(url string, log []models.BarkLog) (string, appError.AppErr) {
 	logRawJson, _ := json.Marshal(log)
 	return post(url, string(logRawJson))
 }
@@ -60,5 +56,5 @@ func Get(url string) (string, appError.AppErr) {
 		err.Severity = 1
 	}
 
-	return string(bodyBytes), appError.AppErr{}
+	return string(bodyBytes), err
 }

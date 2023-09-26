@@ -28,6 +28,10 @@ func (c *Config) Debug(message string) {
 	c.log(message, "DEBUG")
 }
 
+func (c *Config) Print(message string) {
+	c.log(message, c.ErrorLevel)
+}
+
 func (c *Config) Errorf(message string, format ...any) {
 	c.log(fmt.Sprintf(message, format...), "ERROR")
 }
@@ -42,6 +46,10 @@ func (c *Config) Warnf(message string, format ...any) {
 
 func (c *Config) Debugf(message string, format ...any) {
 	c.log(fmt.Sprintf(message, format...), "DEBUG")
+}
+
+func (c *Config) Printf(message string, format ...any) {
+	c.log(fmt.Sprintf(message, format...), c.ErrorLevel)
 }
 
 func (c *Config) log(message, logLevel string) {

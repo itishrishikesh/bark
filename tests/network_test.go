@@ -27,5 +27,5 @@ func Test_requester(t *testing.T) {
 	logs[0] = models.BarkLog{Message: "someMessage"}
 	logs[1] = models.BarkLog{Message: "someMessage"}
 	logs[2] = models.BarkLog{Message: "someMessage"}
-	client.PostLogs("http://localhost:8080/insertMultiple", logs)
+	_, _ = client.PostLogArray("http://localhost:8080/insertMultiple", logs)
 }
