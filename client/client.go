@@ -2,12 +2,12 @@ package client
 
 import (
 	"fmt"
-	`github.com/techrail/bark/appRuntime`
-	`github.com/techrail/bark/constants`
-	"github.com/techrail/bark/models"
-	"strconv"
+	"log/slog"
 	"strings"
-	"time"
+
+	"github.com/techrail/bark/appRuntime"
+	"github.com/techrail/bark/constants"
+	"github.com/techrail/bark/models"
 )
 
 // type webhook func(models.BarkLog) error
@@ -85,50 +85,72 @@ func getLogLevelFromCharacter(s string) string {
 
 func (c *Config) Panic(message string) {
 	c.sendLogToServer(message, constants.Panic)
+	// Todo: add panic slog
 }
 func (c *Config) Alert(message string) {
 	// Todo: handle the alert webhook call here
 	c.sendLogToServer(message, constants.Alert)
+	// Todo: add alert slog
 }
 func (c *Config) Error(message string) {
 	c.sendLogToServer(message, constants.Error)
+	slog.Error(message)
 }
 func (c *Config) Warn(message string) {
 	c.sendLogToServer(message, constants.Warning)
+	slog.Warn(message)
 }
 func (c *Config) Notice(message string) {
 	c.sendLogToServer(message, constants.Notice)
+	// Todo: add notice slog
 }
 func (c *Config) Info(message string) {
 	c.sendLogToServer(message, constants.Info)
+	slog.Info(message)
 }
 func (c *Config) Debug(message string) {
 	c.sendLogToServer(message, constants.Debug)
+	slog.Debug(message)
 }
 func (c *Config) Println(message string) {
-	c.sendLogToServer(message+"\n", constants.Info)
+	c.sendLogToServer(message, constants.Info)
+	slog.Info(message)
 }
 
 func (c *Config) Panicf(message string, format ...any) {
-	c.sendLogToServer(fmt.Sprintf(message, format...), constants.Panic)
+	message = fmt.Sprintf(message, format...)
+	c.sendLogToServer(message, constants.Panic)
+	// todo: add panic slog
 }
 func (c *Config) Alertf(message string, format ...any) {
-	c.sendLogToServer(fmt.Sprintf(message, format...), constants.Alert)
+	message = fmt.Sprintf(message, format...)
+	c.sendLogToServer(message, constants.Alert)
+	// Todo: add alert slog
 }
 func (c *Config) Errorf(message string, format ...any) {
-	c.sendLogToServer(fmt.Sprintf(message, format...), constants.Error)
+	message = fmt.Sprintf(message, format...)
+	c.sendLogToServer(message, constants.Error)
+	slog.Error(message)
 }
 func (c *Config) Warnf(message string, format ...any) {
-	c.sendLogToServer(fmt.Sprintf(message, format...), constants.Warning)
+	message = fmt.Sprintf(message, format...)
+	c.sendLogToServer(message, constants.Warning)
+	slog.Warn(message)
 }
 func (c *Config) Noticef(message string, format ...any) {
-	c.sendLogToServer(fmt.Sprintf(message, format...), constants.Notice)
+	message = fmt.Sprintf(message, format...)
+	c.sendLogToServer(message, constants.Notice)
+	// Todo: add notice slog
 }
 func (c *Config) Infof(message string, format ...any) {
-	c.sendLogToServer(fmt.Sprintf(message, format...), constants.Info)
+	message = fmt.Sprintf(message, format...)
+	c.sendLogToServer(message, constants.Info)
+	slog.Info(message)
 }
 func (c *Config) Debugf(message string, format ...any) {
-	c.sendLogToServer(fmt.Sprintf(message, format...), constants.Debug)
+	message = fmt.Sprintf(message, format...)
+	c.sendLogToServer(message, constants.Debug)
+	slog.Debug(message)
 }
 
 // func (c *Config) SetAlertWebhook(f webhook) {
@@ -136,14 +158,9 @@ func (c *Config) Debugf(message string, format ...any) {
 // }
 
 func (c *Config) sendLogToServer(message, logLevel string) {
-	// Todo: We have to parse the error message
-	log := models.BarkLog{
-		Message:     message,
-		LogLevel:    logLevel,
-		SessionName: c.SessionName,
-		ServiceName: c.ServiceName,
-		Code:        getLMIDForLogLevel(&logLevel),
-	}
+	log := c.parseMessage(message)
+
+	log.LogLevel = logLevel
 
 	go func() {
 		_, err := PostLog(c.BaseUrl+"/insertSingle", log)
@@ -152,16 +169,7 @@ func (c *Config) sendLogToServer(message, logLevel string) {
 			return
 		}
 	}()
-
-	fmt.Printf("%s - %s\n", log.Code, message)
 	// Todo: Add uber zap to avoid printing with PrintF (We don't want to handle sendLogToServer printing)
-}
-
-func getLMIDForLogLevel(logLevel *string) string {
-	currTime := time.Now().Unix() - 1600000000
-	convertToBase36 := strconv.FormatInt(currTime, 36)
-	firstLetterOfLogLevel := string((*logLevel)[0])
-	return firstLetterOfLogLevel + "#" + strings.ToUpper(convertToBase36)
 }
 
 func NewClient(url, errLevel, svcName, sessName string) *Config {

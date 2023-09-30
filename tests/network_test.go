@@ -10,16 +10,16 @@ func Test_requester(t *testing.T) {
 	logClient := client.NewClient("http://localhost:8080/", "INFO", "ServicName", "localRun")
 
 	// Print with formatter
-	logClient.Error("Anime: Naruto")
-	logClient.Info("Anime: One Piece")
-	logClient.Debug("Anime: Bleach")
-	logClient.Warn("Anime: AOT")
+	logClient.Error("L#1L3WBF - Anime: Naruto")
+	logClient.Info("L#1L3WBF Anime: One Piece")
+	logClient.Debug(" -- Anime: Bleach")
+	logClient.Warn("-- Anime: AOT")
 
 	// Print without formatter
-	logClient.Errorf("Anime: %s", "Full Metal Alchemist")
-	logClient.Infof("Anime: %s", "Tokyo Ghoul")
-	logClient.Warnf("Anime: %s", "")
-	logClient.Debugf("I want to print something! %s", "weirdString")
+	logClient.Errorf("L#1L3WBF - Anime: %s", "Full Metal Alchemist")
+	logClient.Infof("L#1L3WBF - Anime: %s", "Tokyo Ghoul")
+	logClient.Warnf("L#1L3WBF - Anime: %s", "")
+	logClient.Debugf("L#1L3WBF - I want to print something! %s", "weirdString")
 
 	// Multiple Logs
 	var logs []models.BarkLog
