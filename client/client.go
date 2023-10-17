@@ -27,7 +27,7 @@ type Config struct {
 	AlertWebhook webhook
 }
 
-// parseMessage extracts LMID (Log Message Identifier) if a valid LMID exists in message string otherwise.
+// parseMessage extracts LMID (Log Message Identifier) if a valid LMID exists in message string.
 func (c *Config) parseMessage(msg string) models.BarkLog {
 	l := models.BarkLog{
 		ServiceName: c.ServiceName,
@@ -371,7 +371,7 @@ func (c *Config) Raw(rawLog RawLog, returnError bool) error {
 }
 
 // Println sends logs to server based on LMID passed in message string.
-// If the LMID is invalid an LvlInfo log level considered by default.
+// If the LMID is invalid an LvlInfo log level is considered by default.
 // This method prints the logs regardless if the slog is enabled or not.
 func (c *Config) Println(message string) {
 	l := c.parseMessage(message)

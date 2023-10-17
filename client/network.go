@@ -9,7 +9,11 @@ import (
 	"github.com/techrail/bark/typs/appError"
 )
 
-// post makes a HTTP post request to url with the given payload.
+var fastHttpClient = &fasthttp.Client{
+	MaxConnsPerHost: ChannelCapacity,
+}
+
+// post makes an HTTP post request to url with the given payload.
 func post(url, payload string) (string, appError.AppErr) {
 	var appErr appError.AppErr
 	req := fasthttp.AcquireRequest()
@@ -18,8 +22,7 @@ func post(url, payload string) (string, appError.AppErr) {
 	req.SetBodyString(payload)
 
 	resp := fasthttp.AcquireResponse()
-	client := &fasthttp.Client{}
-	err := client.Do(req, resp)
+	err := fastHttpClient.Do(req, resp)
 
 	if err != nil {
 		appErr.Msg = fmt.Sprintf("Error when making network call: %v", err)
@@ -40,7 +43,7 @@ func post(url, payload string) (string, appError.AppErr) {
 	return string(bodyBytes), appErr
 }
 
-// PostLog makes a HTTP post request to bark server url and send BarkLog as payload.
+// PostLog makes an HTTP post request to bark server url and send BarkLog as payload.
 func PostLog(url string, log models.BarkLog) (string, appError.AppErr) {
 	logRawJson, _ := json.Marshal(log)
 	return post(url, string(logRawJson))
@@ -59,8 +62,7 @@ func Get(url string) (string, appError.AppErr) {
 	req.SetRequestURI(url)
 
 	resp := fasthttp.AcquireResponse()
-	client := &fasthttp.Client{}
-	client.Do(req, resp)
+	fastHttpClient.Do(req, resp)
 
 	bodyBytes := resp.Body()
 

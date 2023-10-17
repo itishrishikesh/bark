@@ -10,7 +10,7 @@ import (
 )
 
 func TestClient(t *testing.T) {
-	logClient := client.NewClient("http://localhost:8080/", constants.Info, "TestService", "localRun", false, false)
+	logClient := client.NewClient("http://localhost:8080/", constants.Info, "TestService", "localRun", true, false)
 	sendDummyLogsThroughAllMethods(logClient)
 }
 
@@ -59,4 +59,6 @@ func sendDummyLogsThroughAllMethods(logClient *client.Config) {
 	logClient.Panicf("%s Message!", "Panic")
 	logClient.Alertf("%s Message!", true, "Alert")
 	logClient.Noticef("%s Message!", "Notice")
+
+	logClient.WaitAndEnd()
 }
